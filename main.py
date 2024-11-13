@@ -1,5 +1,5 @@
 import json
-
+from flask_cors import CORS
 from flask import Flask, request, jsonify
 import joblib
 import nltk
@@ -7,7 +7,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from LemmaTokenizer import LemmaTokenizer
 
 app = Flask(__name__)
-
+CORS(app)
 
 def get_recommendation(process):
     return recommendations.get(process, "Нет доступных рекомендаций для данного процесса.")
@@ -21,8 +21,8 @@ def predict():
     predicted_label = encoder.inverse_transform([prediction])[0]
     recommendation = get_recommendation(predicted_label)
     response = {
-        "Предсказанный процесс": predicted_label,
-        "Рекомендация": recommendation
+        "Predicted process": predicted_label,
+        "Reccomendation": recommendation
     }
     return jsonify(response)
 
@@ -40,4 +40,4 @@ if __name__ == '__main__':
     pipeline = joblib.load("./model/pipeline.pkl")
     encoder = joblib.load("./model/encoder.pkl")
 
-    app.run(port=port, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=True)
